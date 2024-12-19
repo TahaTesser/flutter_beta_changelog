@@ -1,0 +1,83 @@
+name: Update Changelog JSON
+
+on:
+  push:
+    branches:
+      - beta
+
+jobs:
+  update-changelog:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js (to use a simple script or curl, optional)
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16'
+
+      - name: Fetch latest commits from Flutter beta branch
+        run: |
+          # Set variables
+          FLUTTER_REPO="https://api.github.com/repos/flutter/flutter/commits"
+          BRANCH="beta"
+          # Read the current changelog JSON if it exists
+          if [ -f ./changelog.json ]; then
+            LAST_DATE=$(jq -r '.[0].date // empty' changelog.json)
+          else
+            LAST_DATE=""
+          fi
+
+          # Build query parameters
+          PARAMS="?sha=$BRANCH&per_page=100"
+          if [ -n "$LAST_DATE" ] && [ "$LAST_DATE" != "null" ]; then
+            # If we have a last known commit date, fetch commits since then
+            PARAMS="$PARAMS&since=$LAST_DATE"
+          fi
+
+          # Fetch commits from Flutter beta branch
+          curl -s "$FLUTTER_REPO$PARAMS" -H "Accept: application/vnd.github.v3+json" > commits.json
+
+          # Parse the fetched commits and transform them into our desired format
+          # We'll produce an array of objects: {sha, message, date, authorLogin}
+          # Sort them by date ascending so that the most recent is at the end
+          # After that, we can prepend them to the existing changelog.
+
+          NEW_COMMITS=$(jq '[.[] | {
+            sha: .sha,
+            message: .commit.message,
+            date: .commit.committer.date,
+            authorLogin: (.author.login // "unknown")
+          }] | sort_by(.date)' commits.json)
+
+          # If no new commits, nothing to do
+          if [ "$(echo "$NEW_COMMITS" | jq length)" -eq "0" ]; then
+            echo "No new commits found."
+            exit 0
+          fi
+
+          # If changelog.json exists, merge new commits into the front
+          # Sort final result by date descending
+          if [ -f changelog.json ]; then
+            EXISTING=$(cat changelog.json)
+            MERGED=$(jq -s '.[0] + .[1] | sort_by(.date) | reverse' <<<"$NEW_COMMITS
+$EXISTING")
+          else
+            # If no file yet, just use the new commits
+            MERGED=$(echo "$NEW_COMMITS" | jq 'reverse')
+          fi
+
+          echo "$MERGED" > changelog.json
+
+      - name: Commit and push changes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add changelog.json
+          if git diff --cached --quiet; then
+            echo "No changes to commit."
+          else
+            git commit -m "Update changelog.json with latest commits"
+            git push origin beta
+          fi

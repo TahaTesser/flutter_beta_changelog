@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:flutter/services.dart' show rootBundle;
 
 void main() {
   runApp(const MyApp());
@@ -101,8 +102,8 @@ class _ChangelogPageState extends State<ChangelogPage> {
 
     try {
       final response = await http.get(uri, headers: headers);
-      
-      if (response.statusCode == 403 && 
+
+      if (response.statusCode == 403 &&
           response.body.toLowerCase().contains('rate limit')) {
         setState(() {
           _rateLimitExceeded = true;
@@ -115,7 +116,10 @@ class _ChangelogPageState extends State<ChangelogPage> {
       }
 
       final List<dynamic> data = json.decode(response.body);
-      return data.take(maxCommits ?? data.length).map((e) => e as Map<String, dynamic>).toList();
+      return data
+          .take(maxCommits ?? data.length)
+          .map((e) => e as Map<String, dynamic>)
+          .toList();
     } catch (e) {
       print('Error fetching commits: $e');
       return [];
@@ -150,12 +154,24 @@ class _ChangelogPageState extends State<ChangelogPage> {
       _rateLimitExceeded = false;
     });
     try {
-      final changelog = await buildChangelog(_fromDate);
+      final jsonString = await rootBundle.loadString('changelog.json');
+      final List<dynamic> data = json.decode(jsonString);
+
+      final changelog = data.map((entry) {
+        return ChangelogEntry(
+          sha: entry['sha'],
+          message: entry['message'],
+          date: DateTime.parse(entry['date']),
+          authorLogin: entry['authorLogin'],
+        );
+      }).toList();
+
       setState(() {
         _changelogEntries = changelog;
         _isLoading = false;
       });
     } catch (e) {
+      print('Error loading local changelog: $e');
       setState(() {
         _isLoading = false;
       });
