@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:github/github.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 import 'package:intl/intl.dart';
 import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -39,13 +40,13 @@ class ChangelogEntry {
   final String sha;
   final String message;
   final DateTime date;
-  final User author;
+  final String authorLogin;
 
   ChangelogEntry({
     required this.sha,
     required this.message,
     required this.date,
-    required this.author,
+    required this.authorLogin,
   });
 }
 
@@ -78,43 +79,47 @@ class _ChangelogPageState extends State<ChangelogPage> {
     await _loadChangelog();
   }
 
-  Future<List<RepositoryCommit>> fetchCommits({
+  Future<List<Map<String, dynamic>>> fetchCommits({
     int? maxCommits,
     DateTime? since,
     DateTime? until,
   }) async {
-    final github = (_githubToken != null && _githubToken!.isNotEmpty)
-        ? GitHub(auth: Authentication.withToken(_githubToken!))
-        : GitHub();
+    final baseUrl = 'https://api.github.com/repos/flutter/flutter/commits';
+    final queryParams = {
+      'sha': 'beta',
+      if (since != null) 'since': since.toUtc().toIso8601String(),
+      if (until != null) 'until': until.toUtc().toIso8601String(),
+      'per_page': '100',
+    };
 
-    final slug = RepositorySlug('flutter', 'flutter');
-    final commits = <RepositoryCommit>[];
+    final uri = Uri.parse(baseUrl).replace(queryParameters: queryParams);
+    final headers = {
+      'Accept': 'application/vnd.github.v3+json',
+      if (_githubToken != null && _githubToken!.isNotEmpty)
+        'Authorization': 'Bearer $_githubToken',
+    };
 
     try {
-      final commitStream = github.repositories.listCommits(
-        slug,
-        sha: 'beta',
-        since: since,
-        until: until,
-      );
-
-      await for (final commit in commitStream) {
-        if (maxCommits != null && commits.length >= maxCommits) {
-          break;
-        }
-        commits.add(commit);
-      }
-      print('Fetched ${commits.length} commits');
-    } on GitHubError catch (e) {
-      // Check for rate limit
-      if (e.message != null && e.message!.contains('rate limit')) {
+      final response = await http.get(uri, headers: headers);
+      
+      if (response.statusCode == 403 && 
+          response.body.toLowerCase().contains('rate limit')) {
         setState(() {
           _rateLimitExceeded = true;
         });
+        return [];
       }
-    }
 
-    return commits;
+      if (response.statusCode != 200) {
+        throw Exception('Failed to fetch commits: ${response.statusCode}');
+      }
+
+      final List<dynamic> data = json.decode(response.body);
+      return data.take(maxCommits ?? data.length).map((e) => e as Map<String, dynamic>).toList();
+    } catch (e) {
+      print('Error fetching commits: $e');
+      return [];
+    }
   }
 
   Future<List<ChangelogEntry>> buildChangelog(DateTime fromDate) async {
@@ -122,16 +127,16 @@ class _ChangelogPageState extends State<ChangelogPage> {
     final commits = await fetchCommits(since: fromDate, maxCommits: 100);
 
     for (final commit in commits) {
-      if (commit.commit != null &&
-          commit.sha != null &&
-          commit.commit!.committer != null) {
-        entries.add(ChangelogEntry(
-          sha: commit.sha!,
-          message: commit.commit!.message!,
-          date: commit.commit!.committer!.date!,
-          author: commit.author ?? User(login: 'unknown'),
-        ));
-      }
+      final commitData = commit['commit'] as Map<String, dynamic>;
+      final committer = commitData['committer'] as Map<String, dynamic>;
+      final author = commit['author'] as Map<String, dynamic>?;
+
+      entries.add(ChangelogEntry(
+        sha: commit['sha'] as String,
+        message: commitData['message'] as String,
+        date: DateTime.parse(committer['date'] as String),
+        authorLogin: author?['login'] as String? ?? 'unknown',
+      ));
     }
 
     // Sort by date descending
