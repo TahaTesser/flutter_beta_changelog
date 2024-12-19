@@ -71,13 +71,14 @@ class _ChangelogPageState extends State<ChangelogPage> {
       _isLoading = true;
     });
     try {
-      final jsonString = await rootBundle.loadString('assets/beta_commits.json');
+      final jsonString =
+          await rootBundle.loadString('assets/beta_commits.json');
       final List<dynamic> data = json.decode(jsonString);
 
       final changelog = data.map((entry) {
         final message = entry['commit']['message'] as String;
         final firstLine = message.split('\n').first;
-        
+
         return ChangelogEntry(
           sha: entry['sha'] as String,
           message: firstLine,
@@ -138,13 +139,16 @@ class _ChangelogPageState extends State<ChangelogPage> {
   String _detectCategory(String message) {
     final lower = message.toLowerCase();
     if (lower.contains('[new]')) return 'New';
-    if (lower.contains('[improved]') || lower.contains('improve'))
+    if (lower.contains('[improved]') || lower.contains('improve')) {
       return 'Improved';
+    }
     if (lower.contains('[fixed]') || lower.contains('fix')) return 'Fixed';
-    if (lower.contains('[changed]') || lower.contains('change'))
+    if (lower.contains('[changed]') || lower.contains('change')) {
       return 'Changed';
-    if (lower.contains('[removed]') || lower.contains('remove'))
+    }
+    if (lower.contains('[removed]') || lower.contains('remove')) {
       return 'Removed';
+    }
     return 'Changed';
   }
 
