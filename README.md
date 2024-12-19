@@ -2,7 +2,9 @@
 
 This app provides a concise weekly summary of the latest changes in the Flutter `beta` channel. Instead of sifting through numerous commits, it organizes updates by week and tags them into categories like **New**, **Improved**, **Fixed**, **Changed**, and **Removed**, making it easy to stay informed.
 
-*Note: This app was created with AI assistance.*
+## Try It Live
+Check out the latest summary at:  
+[http://flutterbetachangelog.codemagic.app](http://flutterbetachangelog.codemagic.app)
 
 ## Features
 - **Weekly Summaries:** Changes are grouped by week for quick scanning.
@@ -18,10 +20,6 @@ Updates are automatically classified into:
 - **Fixed** (Red): Bug fixes and corrections
 - **Changed** (Primary): General changes and updates
 - **Removed** (Error): Deprecated or removed features
-
-## Try It Live
-Check out the latest summary at:  
-[http://flutterbetachangelog.codemagic.app](http://flutterbetachangelog.codemagic.app)
 
 ## Development
 1. Clone the repository
