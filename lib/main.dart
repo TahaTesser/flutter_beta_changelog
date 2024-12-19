@@ -3,6 +3,7 @@ import 'package:github/github.dart';
 import 'package:intl/intl.dart';
 import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 void main() {
   runApp(const MyApp());
@@ -26,6 +27,7 @@ class MyApp extends StatelessWidget {
     );
 
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'Flutter Beta Changelog',
       theme: lightTheme,
       home: const ChangelogPage(),
@@ -281,6 +283,13 @@ class _ChangelogPageState extends State<ChangelogPage> {
         title: const Text('Flutter Beta Changelog'),
         centerTitle: true,
         actions: [
+          IconButton(
+            icon: const Icon(Icons.code),
+            onPressed: () => launchUrl(
+              Uri.parse('https://github.com/TahaTesser/flutter_beta_changelog'),
+            ),
+            tooltip: 'View Source',
+          ),
           IconButton(
             icon: const Icon(Icons.settings),
             onPressed: _showTokenDialog,
