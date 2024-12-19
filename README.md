@@ -1,16 +1,16 @@
-# flutter_beta_changelog
+# Flutter Beta Changelog Summary
 
-A new Flutter project.
+This app provides a concise weekly summary of the latest changes in the Flutter `beta` channel. Instead of sifting through numerous commits, it organizes updates by week and tags them into categories like **New**, **Improved**, **Fixed**, **Changed**, and **Removed**, making it easy to stay informed.
 
-## Getting Started
+## Features
+- **Weekly Summaries:** Changes are grouped by week for quick scanning.
+- **Categorized Updates:** Clear sections highlight new features, improvements, fixes, and more.
+- **Modern UI:** A clean, Material 3-inspired interface with `flex_color_scheme` ensures a pleasant reading experience.
+- **Real-Time Data:** Always fetches the latest updates from `flutter/flutter` `beta`.
 
-This project is a starting point for a Flutter application.
+## Try It Live
+Check out the latest summary at:  
+[http://flutterbetachanelog.codemagic.app](http://flutterbetachanelog.codemagic.app)
 
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## Usage
+Clone, run `flutter pub get`, then `flutter run`. Any new changes in the Flutter `beta` branch trigger an automatic version increment and Codemagic build.
