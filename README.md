@@ -2,7 +2,7 @@
 
 This app provides a concise weekly summary of the latest changes in the Flutter `beta` channel. Instead of sifting through numerous commits, it organizes updates by week and tags them into categories like **New**, **Improved**, **Fixed**, **Changed**, and **Removed**, making it easy to stay informed.
 
-*Note: This app was created in Gemini.*
+*Note: This app was created in Gemini and improvied in ChatGPT.*
 
 ## Features
 - **Weekly Summaries:** Changes are grouped by week for quick scanning.
@@ -21,10 +21,7 @@ Subsequent data fetches will use the authenticated token, greatly reducing the l
 
 ## Try It Live
 Check out the latest summary at:  
-[http://flutterbetachanelog.codemagic.app](http://flutterbetachanelog.codemagic.app)
+[http://flutterbetachangelog.codemagic.app](http://flutterbetachangelog.codemagic.app)
 
 ## Usage
 Clone, run `flutter pub get`, then `flutter run`. Any new changes in the Flutter `beta` branch trigger an automatic version increment and a Codemagic build.
-
-## License
-[MIT License](LICENSE)
