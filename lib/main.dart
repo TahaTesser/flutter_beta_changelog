@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:intl/intl.dart';
 import 'package:flex_color_scheme/flex_color_scheme.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter/services.dart' show rootBundle;
+import 'package:url_launcher/url_launcher.dart';
 
 void main() {
   runApp(const MyApp());
@@ -61,110 +59,35 @@ class ChangelogPage extends StatefulWidget {
 class _ChangelogPageState extends State<ChangelogPage> {
   List<ChangelogEntry> _changelogEntries = [];
   bool _isLoading = true;
-  bool _rateLimitExceeded = false;
-  String? _githubToken;
-
-  final DateTime _fromDate = DateTime.now().subtract(const Duration(days: 30));
 
   @override
   void initState() {
     super.initState();
-    _loadTokenAndChangelog();
-  }
-
-  Future<void> _loadTokenAndChangelog() async {
-    final prefs = await SharedPreferences.getInstance();
-    setState(() {
-      _githubToken = prefs.getString('github_token');
-    });
-    await _loadChangelog();
-  }
-
-  Future<List<Map<String, dynamic>>> fetchCommits({
-    int? maxCommits,
-    DateTime? since,
-    DateTime? until,
-  }) async {
-    final baseUrl = 'https://api.github.com/repos/flutter/flutter/commits';
-    final queryParams = {
-      'sha': 'beta',
-      if (since != null) 'since': since.toUtc().toIso8601String(),
-      if (until != null) 'until': until.toUtc().toIso8601String(),
-      'per_page': '100',
-    };
-
-    final uri = Uri.parse(baseUrl).replace(queryParameters: queryParams);
-    final headers = {
-      'Accept': 'application/vnd.github.v3+json',
-      if (_githubToken != null && _githubToken!.isNotEmpty)
-        'Authorization': 'Bearer $_githubToken',
-    };
-
-    try {
-      final response = await http.get(uri, headers: headers);
-
-      if (response.statusCode == 403 &&
-          response.body.toLowerCase().contains('rate limit')) {
-        setState(() {
-          _rateLimitExceeded = true;
-        });
-        return [];
-      }
-
-      if (response.statusCode != 200) {
-        throw Exception('Failed to fetch commits: ${response.statusCode}');
-      }
-
-      final List<dynamic> data = json.decode(response.body);
-      return data
-          .take(maxCommits ?? data.length)
-          .map((e) => e as Map<String, dynamic>)
-          .toList();
-    } catch (e) {
-      print('Error fetching commits: $e');
-      return [];
-    }
-  }
-
-  Future<List<ChangelogEntry>> buildChangelog(DateTime fromDate) async {
-    final entries = <ChangelogEntry>[];
-    final commits = await fetchCommits(since: fromDate, maxCommits: 100);
-
-    for (final commit in commits) {
-      final commitData = commit['commit'] as Map<String, dynamic>;
-      final committer = commitData['committer'] as Map<String, dynamic>;
-      final author = commit['author'] as Map<String, dynamic>?;
-
-      entries.add(ChangelogEntry(
-        sha: commit['sha'] as String,
-        message: commitData['message'] as String,
-        date: DateTime.parse(committer['date'] as String),
-        authorLogin: author?['login'] as String? ?? 'unknown',
-      ));
-    }
-
-    // Sort by date descending
-    entries.sort((a, b) => b.date.compareTo(a.date));
-    return entries;
+    _loadChangelog();
   }
 
   Future<void> _loadChangelog() async {
     setState(() {
       _isLoading = true;
-      _rateLimitExceeded = false;
     });
     try {
-      final jsonString = await rootBundle.loadString('changelog.json');
+      final jsonString = await rootBundle.loadString('assets/beta_commits.json');
       final List<dynamic> data = json.decode(jsonString);
 
       final changelog = data.map((entry) {
+        final message = entry['commit']['message'] as String;
+        final firstLine = message.split('\n').first;
+        
         return ChangelogEntry(
-          sha: entry['sha'],
-          message: entry['message'],
-          date: DateTime.parse(entry['date']),
-          authorLogin: entry['authorLogin'],
+          sha: entry['sha'] as String,
+          message: firstLine,
+          date: DateTime.parse(entry['commit']['committer']['date'] as String),
+          authorLogin: (entry['author']?['login'] as String?) ?? 'unknown',
         );
       }).toList();
+
+      // Sort by date descending
+      changelog.sort((a, b) => b.date.compareTo(a.date));
 
       setState(() {
         _changelogEntries = changelog;
@@ -225,74 +148,6 @@ class _ChangelogPageState extends State<ChangelogPage> {
     return 'Changed';
   }
 
-  void _showTokenDialog() {
-    final controller = TextEditingController(text: _githubToken);
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: const Text('Set GitHub Token'),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const Text(
-                'Enter your GitHub Personal Access Token to avoid rate limits:\n\n'
-                '- Generate a token at https://github.com/settings/tokens\n'
-                '- No special scopes are needed for read-only access.\n',
-              ),
-              TextField(
-                controller: controller,
-                decoration: const InputDecoration(labelText: 'GitHub Token'),
-              ),
-            ],
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text('Cancel'),
-            ),
-            ElevatedButton(
-              onPressed: () async {
-                final newToken = controller.text.trim();
-                final prefs = await SharedPreferences.getInstance();
-                await prefs.setString('github_token', newToken);
-                setState(() {
-                  _githubToken = newToken.isEmpty ? null : newToken;
-                });
-                Navigator.pop(context);
-                _loadChangelog(); // Reload data with new token
-              },
-              child: const Text('Save'),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  Widget _buildRateLimitWarning() {
-    if (_rateLimitExceeded && (_githubToken == null || _githubToken!.isEmpty)) {
-      return Container(
-        color: Colors.amber.shade100,
-        padding: const EdgeInsets.all(16),
-        margin: const EdgeInsets.all(16),
-        child: Row(
-          children: [
-            const Icon(Icons.warning, color: Colors.amber),
-            const SizedBox(width: 8),
-            Expanded(
-              child: Text(
-                'GitHub rate limit exceeded. Please add a personal access token to continue.',
-                style: TextStyle(color: Colors.amber.shade900),
-              ),
-            ),
-          ],
-        ),
-      );
-    }
-    return const SizedBox.shrink();
-  }
-
   @override
   Widget build(BuildContext context) {
     final weeklyGroups = _groupByWeek(_changelogEntries);
@@ -311,58 +166,44 @@ class _ChangelogPageState extends State<ChangelogPage> {
             ),
             tooltip: 'View Source',
           ),
-          IconButton(
-            icon: const Icon(Icons.settings),
-            onPressed: _showTokenDialog,
-            tooltip: 'Set GitHub Token',
-          ),
         ],
       ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
-          : Column(
-              children: [
-                _buildRateLimitWarning(),
-                Expanded(
-                  child: ListView.builder(
-                    padding: const EdgeInsets.all(16.0),
-                    itemCount: sortedWeeks.length,
-                    itemBuilder: (context, index) {
-                      final weekStart = sortedWeeks[index];
-                      final entries = weeklyGroups[weekStart]!;
-                      final categories = _categorizeCommits(entries);
+          : ListView.builder(
+              padding: const EdgeInsets.all(16.0),
+              itemCount: sortedWeeks.length,
+              itemBuilder: (context, index) {
+                final weekStart = sortedWeeks[index];
+                final entries = weeklyGroups[weekStart]!;
+                final categories = _categorizeCommits(entries);
 
-                      final endOfWeek = weekStart.add(const Duration(days: 6));
-                      final dateRangeStr =
-                          '${DateFormat.yMMMMd().format(weekStart)} - ${DateFormat.yMMMMd().format(endOfWeek)}';
+                final endOfWeek = weekStart.add(const Duration(days: 6));
+                final dateRangeStr =
+                    '${DateFormat.yMMMMd().format(weekStart)} - ${DateFormat.yMMMMd().format(endOfWeek)}';
 
-                      return Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 24.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              dateRangeStr,
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .headlineSmall
-                                  ?.copyWith(
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                            ),
-                            const SizedBox(height: 8),
-                            for (final category in categories.keys) ...[
-                              const SizedBox(height: 16),
-                              _buildCategorySection(
-                                  context, category, categories[category]!),
-                            ],
-                          ],
-                        ),
-                      );
-                    },
+                return Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 24.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        dateRangeStr,
+                        style:
+                            Theme.of(context).textTheme.headlineSmall?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                ),
+                      ),
+                      const SizedBox(height: 8),
+                      for (final category in categories.keys) ...[
+                        const SizedBox(height: 16),
+                        _buildCategorySection(
+                            context, category, categories[category]!),
+                      ],
+                    ],
                   ),
-                ),
-              ],
+                );
+              },
             ),
     );
   }
