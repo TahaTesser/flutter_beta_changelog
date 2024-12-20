@@ -164,6 +164,11 @@ class _ChangelogPageState extends State<ChangelogPage> {
         centerTitle: true,
         actions: [
           IconButton(
+            icon: const Icon(Icons.info_outline),
+            onPressed: () => _showAboutDialog(context),
+            tooltip: 'About',
+          ),
+          IconButton(
             icon: const Icon(Icons.code),
             onPressed: () => launchUrl(
               Uri.parse('https://github.com/TahaTesser/flutter_beta_changelog'),
@@ -270,5 +275,28 @@ class _ChangelogPageState extends State<ChangelogPage> {
       default:
         return scheme.outline;
     }
+  }
+
+  void _showAboutDialog(BuildContext context) {
+    showAboutDialog(
+      context: context,
+      applicationName: 'Flutter Beta Changelog',
+      applicationVersion: '1.0.0',
+      applicationIcon: const FlutterLogo(size: 64),
+      children: [
+        const Text(
+          'A simple app to track changes in Flutter Beta channel. '
+          'This app helps developers stay up to date with the latest changes '
+          'in Flutter Beta releases.',
+        ),
+        const SizedBox(height: 16),
+        TextButton(
+          onPressed: () => launchUrl(
+            Uri.parse('https://github.com/TahaTesser/flutter_beta_changelog'),
+          ),
+          child: const Text('View Source Code'),
+        ),
+      ],
+    );
   }
 }
