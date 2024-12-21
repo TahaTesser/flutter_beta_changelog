@@ -95,7 +95,6 @@ class _ChangelogPageState extends State<ChangelogPage> {
         _isLoading = false;
       });
     } catch (e) {
-      print('Error loading local changelog: $e');
       setState(() {
         _isLoading = false;
       });
@@ -207,7 +206,7 @@ class _ChangelogPageState extends State<ChangelogPage> {
                       for (final category in categories.keys) ...[
                         const SizedBox(height: 16),
                         _buildCategorySection(
-                            context, category, categories[category]!),
+                            context, category, categories[category]!, entries),
                       ],
                     ],
                   ),
@@ -217,8 +216,9 @@ class _ChangelogPageState extends State<ChangelogPage> {
     );
   }
 
-  Widget _buildCategorySection(
-      BuildContext context, String category, List<String> items) {
+  Widget _buildCategorySection(BuildContext context, String category,
+      List<String> items, List<ChangelogEntry> entries) {
+    _changelogEntries = entries;
     final categoryColor = _categoryColor(context, category);
 
     return Column(
@@ -230,7 +230,7 @@ class _ChangelogPageState extends State<ChangelogPage> {
             borderRadius: BorderRadius.circular(4),
           ),
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-          child: Text(
+          child: SelectableText(
             category,
             style: Theme.of(context).textTheme.labelLarge?.copyWith(
                   fontWeight: FontWeight.bold,
@@ -245,12 +245,29 @@ class _ChangelogPageState extends State<ChangelogPage> {
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text('• ', style: TextStyle(fontSize: 18)),
+                const SelectableText('• ', style: TextStyle(fontSize: 18)),
                 Expanded(
-                  child: Text(
+                  child: SelectableText(
                     item.replaceAll(RegExp(r'\[.*?\]\s*'), ''),
                     style: Theme.of(context).textTheme.bodyMedium,
                   ),
+                ),
+                Builder(
+                  builder: (context) {
+                    final entry = _changelogEntries
+                        .where((e) => item.contains(e.message))
+                        .firstOrNull;
+                    if (entry == null) return const SizedBox.shrink();
+
+                    return IconButton(
+                      icon: const Icon(Icons.link, size: 20),
+                      onPressed: () => launchUrl(
+                        Uri.parse(
+                            'https://github.com/flutter/flutter/commit/${entry.sha}'),
+                      ),
+                      tooltip: 'View commit',
+                    );
+                  },
                 ),
               ],
             ),
@@ -288,13 +305,6 @@ class _ChangelogPageState extends State<ChangelogPage> {
           'A simple app to track changes in Flutter Beta channel. '
           'This app helps developers stay up to date with the latest changes '
           'in Flutter Beta releases.',
-        ),
-        const SizedBox(height: 16),
-        TextButton(
-          onPressed: () => launchUrl(
-            Uri.parse('https://github.com/TahaTesser/flutter_beta_changelog'),
-          ),
-          child: const Text('View Source Code'),
         ),
       ],
     );
