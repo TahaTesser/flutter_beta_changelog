@@ -93,4 +93,5 @@ flutter:
   # see https://flutter.dev/to/font-from-package
 
   assets:
-    - assets/beta_commits.json
+    - assets/flutter_beta_commits.json
+    - assets/dart_beta_commits.json

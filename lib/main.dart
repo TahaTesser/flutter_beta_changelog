@@ -40,12 +40,14 @@ class ChangelogEntry {
   final String message;
   final DateTime date;
   final String authorLogin;
+  final String type;
 
   ChangelogEntry({
     required this.sha,
     required this.message,
     required this.date,
     required this.authorLogin,
+    required this.type,
   });
 }
 
@@ -56,23 +58,34 @@ class ChangelogPage extends StatefulWidget {
   State<ChangelogPage> createState() => _ChangelogPageState();
 }
 
-class _ChangelogPageState extends State<ChangelogPage> {
-  List<ChangelogEntry> _changelogEntries = [];
-  bool _isLoading = true;
+class _ChangelogPageState extends State<ChangelogPage> with SingleTickerProviderStateMixin {
+  List<ChangelogEntry> _flutterEntries = [];
+  List<ChangelogEntry> _dartEntries = [];
+  bool _isLoadingFlutter = true;
+  bool _isLoadingDart = true;
+  late TabController _tabController;
 
   @override
   void initState() {
     super.initState();
-    _loadChangelog();
+    _tabController = TabController(length: 2, vsync: this);
+    _loadFlutterChangelog();
+    _loadDartChangelog();
   }
 
-  Future<void> _loadChangelog() async {
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _loadFlutterChangelog() async {
     setState(() {
-      _isLoading = true;
+      _isLoadingFlutter = true;
     });
     try {
       final jsonString =
-          await rootBundle.loadString('assets/beta_commits.json');
+          await rootBundle.loadString('assets/flutter_beta_commits.json');
       final List<dynamic> data = json.decode(jsonString);
 
       final changelog = data.map((entry) {
@@ -84,19 +97,54 @@ class _ChangelogPageState extends State<ChangelogPage> {
           message: firstLine,
           date: DateTime.parse(entry['commit']['committer']['date'] as String),
           authorLogin: (entry['author']?['login'] as String?) ?? 'unknown',
+          type: 'flutter',
         );
       }).toList();
 
-      // Sort by date descending
       changelog.sort((a, b) => b.date.compareTo(a.date));
 
       setState(() {
-        _changelogEntries = changelog;
-        _isLoading = false;
+        _flutterEntries = changelog;
+        _isLoadingFlutter = false;
       });
     } catch (e) {
       setState(() {
-        _isLoading = false;
+        _isLoadingFlutter = false;
+      });
+    }
+  }
+
+  Future<void> _loadDartChangelog() async {
+    setState(() {
+      _isLoadingDart = true;
+    });
+    try {
+      final jsonString =
+          await rootBundle.loadString('assets/dart_beta_commits.json');
+      final List<dynamic> data = json.decode(jsonString);
+
+      final changelog = data.map((entry) {
+        final message = entry['commit']['message'] as String;
+        final firstLine = message.split('\n').first;
+
+        return ChangelogEntry(
+          sha: entry['sha'] as String,
+          message: firstLine,
+          date: DateTime.parse(entry['commit']['committer']['date'] as String),
+          authorLogin: (entry['author']?['login'] as String?) ?? 'unknown',
+          type: 'dart',
+        );
+      }).toList();
+
+      changelog.sort((a, b) => b.date.compareTo(a.date));
+
+      setState(() {
+        _dartEntries = changelog;
+        _isLoadingDart = false;
+      });
+    } catch (e) {
+      setState(() {
+        _isLoadingDart = false;
       });
     }
   }
@@ -153,8 +201,12 @@ class _ChangelogPageState extends State<ChangelogPage> {
 
   @override
   Widget build(BuildContext context) {
-    final weeklyGroups = _groupByWeek(_changelogEntries);
-    final sortedWeeks = weeklyGroups.keys.toList()
+    final flutterWeeklyGroups = _groupByWeek(_flutterEntries);
+    final flutterSortedWeeks = flutterWeeklyGroups.keys.toList()
+      ..sort((a, b) => b.compareTo(a));
+
+    final dartWeeklyGroups = _groupByWeek(_dartEntries);
+    final dartSortedWeeks = dartWeeklyGroups.keys.toList()
       ..sort((a, b) => b.compareTo(a));
 
     return Scaffold(
@@ -175,51 +227,91 @@ class _ChangelogPageState extends State<ChangelogPage> {
             tooltip: 'View Source',
           ),
         ],
+        bottom: TabBar(
+          controller: _tabController,
+          tabs: const [
+            Tab(text: 'Flutter'),
+            Tab(text: 'Dart'),
+          ],
+        ),
       ),
-      body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : ListView.builder(
-              padding: const EdgeInsets.all(16.0),
-              itemCount: sortedWeeks.length,
-              itemBuilder: (context, index) {
-                final weekStart = sortedWeeks[index];
-                final entries = weeklyGroups[weekStart]!;
-                final categories = _categorizeCommits(entries);
-
-                final endOfWeek = weekStart.add(const Duration(days: 6));
-                final dateRangeStr =
-                    '${DateFormat.yMMMMd().format(weekStart)} - ${DateFormat.yMMMMd().format(endOfWeek)}';
-
-                return Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 24.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        dateRangeStr,
-                        style:
-                            Theme.of(context).textTheme.headlineSmall?.copyWith(
-                                  fontWeight: FontWeight.bold,
-                                ),
-                      ),
-                      const SizedBox(height: 8),
-                      for (final category in categories.keys) ...[
-                        const SizedBox(height: 16),
-                        _buildCategorySection(
-                            context, category, categories[category]!, entries),
-                      ],
-                    ],
-                  ),
-                );
-              },
-            ),
+      body: TabBarView(
+        controller: _tabController,
+        children: [
+          _buildChangelogList(
+            weeklyGroups: flutterWeeklyGroups,
+            sortedWeeks: flutterSortedWeeks,
+            isLoading: _isLoadingFlutter,
+            type: 'flutter',
+          ),
+          _buildChangelogList(
+            weeklyGroups: dartWeeklyGroups,
+            sortedWeeks: dartSortedWeeks,
+            isLoading: _isLoadingDart,
+            type: 'dart',
+          ),
+        ],
+      ),
     );
+  }
+
+  Widget _buildChangelogList({
+    required Map<DateTime, List<ChangelogEntry>> weeklyGroups,
+    required List<DateTime> sortedWeeks,
+    required bool isLoading,
+    required String type,
+  }) {
+    return isLoading
+        ? const Center(child: CircularProgressIndicator())
+        : ListView.builder(
+            padding: const EdgeInsets.all(16.0),
+            itemCount: sortedWeeks.length,
+            itemBuilder: (context, index) {
+              final weekStart = sortedWeeks[index];
+              final entries = weeklyGroups[weekStart]!;
+              final categories = _categorizeCommits(entries);
+
+              final endOfWeek = weekStart.add(const Duration(days: 6));
+              final dateRangeStr =
+                  '${DateFormat.yMMMMd().format(weekStart)} - ${DateFormat.yMMMMd().format(endOfWeek)}';
+
+              return Padding(
+                padding: const EdgeInsets.symmetric(vertical: 24.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      dateRangeStr,
+                      style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                            fontWeight: FontWeight.bold,
+                          ),
+                    ),
+                    const SizedBox(height: 8),
+                    for (final category in categories.keys) ...[
+                      const SizedBox(height: 16),
+                      _buildCategorySection(
+                        context,
+                        category,
+                        categories[category]!,
+                        entries,
+                      ),
+                    ],
+                  ],
+                ),
+              );
+            },
+          );
   }
 
   Widget _buildCategorySection(BuildContext context, String category,
       List<String> items, List<ChangelogEntry> entries) {
-    _changelogEntries = entries;
     final categoryColor = _categoryColor(context, category);
+
+    String getCommitUrl(ChangelogEntry entry) {
+      return entry.type == 'flutter'
+          ? 'https://github.com/flutter/flutter/commit/${entry.sha}'
+          : 'https://github.com/dart-lang/sdk/commit/${entry.sha}';
+    }
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -254,7 +346,7 @@ class _ChangelogPageState extends State<ChangelogPage> {
                 ),
                 Builder(
                   builder: (context) {
-                    final entry = _changelogEntries
+                    final entry = entries
                         .where((e) => item.contains(e.message))
                         .firstOrNull;
                     if (entry == null) return const SizedBox.shrink();
@@ -262,8 +354,7 @@ class _ChangelogPageState extends State<ChangelogPage> {
                     return IconButton(
                       icon: const Icon(Icons.link, size: 20),
                       onPressed: () => launchUrl(
-                        Uri.parse(
-                            'https://github.com/flutter/flutter/commit/${entry.sha}'),
+                        Uri.parse(getCommitUrl(entry)),
                       ),
                       tooltip: 'View commit',
                     );
