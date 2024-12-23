@@ -29,16 +29,23 @@ jobs:
                "https://api.github.com/repos/dart-lang/sdk/commits?sha=beta&per_page=100" \
                > assets/dart_beta_commits.json
           
-      - name: Increment build number if changes exist
+      - name: Increment version if changes exist
         run: |
           if ! git diff --quiet assets/dart_beta_commits.json; then
             # Read current version
             version_line=$(grep 'version:' pubspec.yaml)
+            version=$(echo $version_line | cut -d' ' -f2 | cut -d'+' -f1)
             build_number=$(echo $version_line | cut -d'+' -f2)
+            
+            # Split version into components
+            IFS='.' read -r major minor patch <<< "$version"
+            
+            # Increment patch version
+            new_patch=$((patch + 1))
             new_build=$((build_number + 1))
             
             # Update version in pubspec.yaml
-            sed -i "s/version: [0-9]\+\.[0-9]\+\.[0-9]\++[0-9]\+/version: 1.0.3+$new_build/" pubspec.yaml
+            sed -i "s/version: [0-9]\+\.[0-9]\+\.[0-9]\++[0-9]\+/version: $major.$minor.$new_patch+$new_build/" pubspec.yaml
           fi
           
       - name: Commit and push if changes exist
