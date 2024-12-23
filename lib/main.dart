@@ -4,7 +4,6 @@ import 'package:intl/intl.dart';
 import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:url_launcher/link.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 void main() {
   runApp(const MyApp());
