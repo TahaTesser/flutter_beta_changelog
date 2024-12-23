@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:intl/intl.dart';
 import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/services.dart' show rootBundle;
+import 'package:url_launcher/link.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 void main() {
@@ -58,7 +59,8 @@ class ChangelogPage extends StatefulWidget {
   State<ChangelogPage> createState() => _ChangelogPageState();
 }
 
-class _ChangelogPageState extends State<ChangelogPage> with SingleTickerProviderStateMixin {
+class _ChangelogPageState extends State<ChangelogPage>
+    with SingleTickerProviderStateMixin {
   List<ChangelogEntry> _flutterEntries = [];
   List<ChangelogEntry> _dartEntries = [];
   bool _isLoadingFlutter = true;
@@ -219,11 +221,10 @@ class _ChangelogPageState extends State<ChangelogPage> with SingleTickerProvider
             onPressed: () => _showAboutDialog(context),
             tooltip: 'About',
           ),
-          IconButton(
+          LinkIconButton(
             icon: const Icon(Icons.code),
-            onPressed: () => launchUrl(
-              Uri.parse('https://github.com/TahaTesser/flutter_beta_changelog'),
-            ),
+            uri: Uri.parse(
+                'https://github.com/TahaTesser/flutter_beta_changelog'),
             tooltip: 'View Source',
           ),
         ],
@@ -282,9 +283,10 @@ class _ChangelogPageState extends State<ChangelogPage> with SingleTickerProvider
                   children: [
                     Text(
                       dateRangeStr,
-                      style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                            fontWeight: FontWeight.bold,
-                          ),
+                      style:
+                          Theme.of(context).textTheme.headlineSmall?.copyWith(
+                                fontWeight: FontWeight.bold,
+                              ),
                     ),
                     const SizedBox(height: 8),
                     for (final category in categories.keys) ...[
@@ -351,11 +353,9 @@ class _ChangelogPageState extends State<ChangelogPage> with SingleTickerProvider
                         .firstOrNull;
                     if (entry == null) return const SizedBox.shrink();
 
-                    return IconButton(
+                    return LinkIconButton(
                       icon: const Icon(Icons.link, size: 20),
-                      onPressed: () => launchUrl(
-                        Uri.parse(getCommitUrl(entry)),
-                      ),
+                      uri: Uri.parse(getCommitUrl(entry)),
                       tooltip: 'View commit',
                     );
                   },
@@ -398,6 +398,37 @@ class _ChangelogPageState extends State<ChangelogPage> with SingleTickerProvider
           'in Flutter Beta releases.',
         ),
       ],
+    );
+  }
+}
+
+/// A IconButton that opens a link when clicked.
+/// Opens a a [Uri] in a new tab. Has native behaviour for clicking on links.
+class LinkIconButton extends StatelessWidget {
+  final Uri uri;
+  final LinkTarget target;
+  final Icon icon;
+  final String? tooltip;
+  const LinkIconButton({
+    super.key,
+    required this.uri,
+    required this.icon,
+    this.tooltip,
+    this.target = LinkTarget.blank,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Link(
+      uri: uri,
+      target: target,
+      builder: (context, followLink) => IconButton(
+        icon: icon,
+        tooltip: tooltip,
+        onPressed: () {
+          followLink!();
+        },
+      ),
     );
   }
 }
