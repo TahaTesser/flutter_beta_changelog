@@ -1,5 +1,67 @@
 [
   {
+    "sha": "93ce50b0f0fe3f05332693f00943e484b7c0aeb3",
+    "node_id": "C_kwDOAiEj5toAKDkzY2U1MGIwZjBmZTNmMDUzMzI2OTNmMDA5NDNlNDg0YjdjMGFlYjM",
+    "commit": {
+      "author": {
+        "name": "Kenzie Davisson",
+        "email": "kenzieschmoll@google.com",
+        "date": "2025-01-30T23:54:40Z"
+      },
+      "committer": {
+        "name": "Commit Queue",
+        "email": "dart-scoped@luci-project-accounts.iam.gserviceaccount.com",
+        "date": "2025-01-30T23:54:40Z"
+      },
+      "message": "[beta] Cherry pick DevTools 2.42.2.\n\nIssue description: 1) The DevTools wasm build was crashing on exceptions because it was built with -O4 optimization. 2) DevTools extensions were broken because the extension asset path was being generated incorrectly.\n\nWhat is the fix: 1) Build DevTools with -O2 optimization for the wasm\nbuild and retain -O4 optimization for the dart2js build. 2) Use the\ncorrect origin when generating DevTools asset paths.\n\nWhy cherry-pick: 1) We are crashing the wasm build for users trying this experiment and are unable to collect actionable data while monitoring the rollout. 2) The bug breaking DevTools extensions has not made it to stable yet, and it will without this cherry pick.\n\nRisk: Low. 1) The wasm build of DevTools is still an opt-in experiment. 2) DevTools extensions have been tested and the fix is verified with this change.\n\nIssue link(s): https://github.com/flutter/devtools/issues/8828\n\nCherry-pick: https://github.com/flutter/devtools/issues/8828\nChange-Id: Ibf23e558d57cf26506c914efd953c75e44d7d9bd\nReviewed-on: https://dart-review.googlesource.com/c/sdk/+/406881\nReviewed-by: Elliott Brooks <elliottbrooks@google.com>\nCommit-Queue: Kenzie Davisson <kenzieschmoll@google.com>\nReviewed-by: Ann Mossman <mossman@google.com>",
+      "tree": {
+        "sha": "3f45d6a290273f1fd8b8d5597fd3f69bd041ef75",
+        "url": "https://api.github.com/repos/dart-lang/sdk/git/trees/3f45d6a290273f1fd8b8d5597fd3f69bd041ef75"
+      },
+      "url": "https://api.github.com/repos/dart-lang/sdk/git/commits/93ce50b0f0fe3f05332693f00943e484b7c0aeb3",
+      "comment_count": 0,
+      "verification": {
+        "verified": false,
+        "reason": "unsigned",
+        "signature": null,
+        "payload": null,
+        "verified_at": null
+      }
+    },
+    "url": "https://api.github.com/repos/dart-lang/sdk/commits/93ce50b0f0fe3f05332693f00943e484b7c0aeb3",
+    "html_url": "https://github.com/dart-lang/sdk/commit/93ce50b0f0fe3f05332693f00943e484b7c0aeb3",
+    "comments_url": "https://api.github.com/repos/dart-lang/sdk/commits/93ce50b0f0fe3f05332693f00943e484b7c0aeb3/comments",
+    "author": {
+      "login": "kenzieschmoll",
+      "id": 43759233,
+      "node_id": "MDQ6VXNlcjQzNzU5MjMz",
+      "avatar_url": "https://avatars.githubusercontent.com/u/43759233?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/kenzieschmoll",
+      "html_url": "https://github.com/kenzieschmoll",
+      "followers_url": "https://api.github.com/users/kenzieschmoll/followers",
+      "following_url": "https://api.github.com/users/kenzieschmoll/following{/other_user}",
+      "gists_url": "https://api.github.com/users/kenzieschmoll/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/kenzieschmoll/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/kenzieschmoll/subscriptions",
+      "organizations_url": "https://api.github.com/users/kenzieschmoll/orgs",
+      "repos_url": "https://api.github.com/users/kenzieschmoll/repos",
+      "events_url": "https://api.github.com/users/kenzieschmoll/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/kenzieschmoll/received_events",
+      "type": "User",
+      "user_view_type": "public",
+      "site_admin": false
+    },
+    "committer": null,
+    "parents": [
+      {
+        "sha": "eb89827cad4b04c8c31a3fc1cbaa66af1c4b7998",
+        "url": "https://api.github.com/repos/dart-lang/sdk/commits/eb89827cad4b04c8c31a3fc1cbaa66af1c4b7998",
+        "html_url": "https://github.com/dart-lang/sdk/commit/eb89827cad4b04c8c31a3fc1cbaa66af1c4b7998"
+      }
+    ]
+  },
+  {
     "sha": "eb89827cad4b04c8c31a3fc1cbaa66af1c4b7998",
     "node_id": "C_kwDOAiEj5toAKGViODk4MjdjYWQ0YjA0YzhjMzFhM2ZjMWNiYWE2NmFmMWM0Yjc5OTg",
     "commit": {
@@ -5904,68 +5966,6 @@
         "sha": "a1f5ee9861c73486ab3f9bdc8090c0d0342d5397",
         "url": "https://api.github.com/repos/dart-lang/sdk/commits/a1f5ee9861c73486ab3f9bdc8090c0d0342d5397",
         "html_url": "https://github.com/dart-lang/sdk/commit/a1f5ee9861c73486ab3f9bdc8090c0d0342d5397"
-      }
-    ]
-  },
-  {
-    "sha": "b35bb73ac9227fd3266fdb6c79fdfb43feede4f1",
-    "node_id": "C_kwDOAiEj5toAKGIzNWJiNzNhYzkyMjdmZDMyNjZmZGI2Yzc5ZmRmYjQzZmVlZGU0ZjE",
-    "commit": {
-      "author": {
-        "name": "pq",
-        "email": "pquitslund@google.com",
-        "date": "2025-01-07T23:11:10Z"
-      },
-      "committer": {
-        "name": "Commit Queue",
-        "email": "dart-scoped@luci-project-accounts.iam.gserviceaccount.com",
-        "date": "2025-01-07T23:11:10Z"
-      },
-      "message": "[element model] migrate `string_types`\n\nChange-Id: I31def5c451778f07733eaccd2110741e18638467\nReviewed-on: https://dart-review.googlesource.com/c/sdk/+/403501\nCommit-Queue: Phil Quitslund <pquitslund@google.com>\nCommit-Queue: Konstantin Shcheglov <scheglov@google.com>\nAuto-Submit: Phil Quitslund <pquitslund@google.com>\nReviewed-by: Konstantin Shcheglov <scheglov@google.com>",
-      "tree": {
-        "sha": "1a926f3e94b219500f9b627ca17e11f3bcd6bcc9",
-        "url": "https://api.github.com/repos/dart-lang/sdk/git/trees/1a926f3e94b219500f9b627ca17e11f3bcd6bcc9"
-      },
-      "url": "https://api.github.com/repos/dart-lang/sdk/git/commits/b35bb73ac9227fd3266fdb6c79fdfb43feede4f1",
-      "comment_count": 0,
-      "verification": {
-        "verified": false,
-        "reason": "unsigned",
-        "signature": null,
-        "payload": null,
-        "verified_at": null
-      }
-    },
-    "url": "https://api.github.com/repos/dart-lang/sdk/commits/b35bb73ac9227fd3266fdb6c79fdfb43feede4f1",
-    "html_url": "https://github.com/dart-lang/sdk/commit/b35bb73ac9227fd3266fdb6c79fdfb43feede4f1",
-    "comments_url": "https://api.github.com/repos/dart-lang/sdk/commits/b35bb73ac9227fd3266fdb6c79fdfb43feede4f1/comments",
-    "author": {
-      "login": "pq",
-      "id": 67586,
-      "node_id": "MDQ6VXNlcjY3NTg2",
-      "avatar_url": "https://avatars.githubusercontent.com/u/67586?v=4",
-      "gravatar_id": "",
-      "url": "https://api.github.com/users/pq",
-      "html_url": "https://github.com/pq",
-      "followers_url": "https://api.github.com/users/pq/followers",
-      "following_url": "https://api.github.com/users/pq/following{/other_user}",
-      "gists_url": "https://api.github.com/users/pq/gists{/gist_id}",
-      "starred_url": "https://api.github.com/users/pq/starred{/owner}{/repo}",
-      "subscriptions_url": "https://api.github.com/users/pq/subscriptions",
-      "organizations_url": "https://api.github.com/users/pq/orgs",
-      "repos_url": "https://api.github.com/users/pq/repos",
-      "events_url": "https://api.github.com/users/pq/events{/privacy}",
-      "received_events_url": "https://api.github.com/users/pq/received_events",
-      "type": "User",
-      "user_view_type": "public",
-      "site_admin": false
-    },
-    "committer": null,
-    "parents": [
-      {
-        "sha": "9b8841a1010a7ccc77ec816ab46e9d09d65d1cfc",
-        "url": "https://api.github.com/repos/dart-lang/sdk/commits/9b8841a1010a7ccc77ec816ab46e9d09d65d1cfc",
-        "html_url": "https://github.com/dart-lang/sdk/commit/9b8841a1010a7ccc77ec816ab46e9d09d65d1cfc"
       }
     ]
   }
