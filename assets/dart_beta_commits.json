@@ -1,5 +1,129 @@
 [
   {
+    "sha": "54cec4d7d36e7a5066770287998f425606a2f983",
+    "node_id": "C_kwDOAiEj5toAKDU0Y2VjNGQ3ZDM2ZTdhNTA2Njc3MDI4Nzk5OGY0MjU2MDZhMmY5ODM",
+    "commit": {
+      "author": {
+        "name": "Ivan Inozemtsev",
+        "email": "iinozemtsev@google.com",
+        "date": "2025-03-26T18:30:31Z"
+      },
+      "committer": {
+        "name": "Commit Queue",
+        "email": "dart-scoped@luci-project-accounts.iam.gserviceaccount.com",
+        "date": "2025-03-26T18:30:31Z"
+      },
+      "message": "Version 3.8.0-171.2.beta\n\nChange-Id: I2835dfdd548e02b1e54f41149dfa04518b6c8b3e\nReviewed-on: https://dart-review.googlesource.com/c/sdk/+/418080\nCommit-Queue: Alexander Thomas <athom@google.com>\nReviewed-by: Alexander Thomas <athom@google.com>",
+      "tree": {
+        "sha": "f765d7c9992ff391500d21f1bcacb0b5d5318ee7",
+        "url": "https://api.github.com/repos/dart-lang/sdk/git/trees/f765d7c9992ff391500d21f1bcacb0b5d5318ee7"
+      },
+      "url": "https://api.github.com/repos/dart-lang/sdk/git/commits/54cec4d7d36e7a5066770287998f425606a2f983",
+      "comment_count": 0,
+      "verification": {
+        "verified": false,
+        "reason": "unsigned",
+        "signature": null,
+        "payload": null,
+        "verified_at": null
+      }
+    },
+    "url": "https://api.github.com/repos/dart-lang/sdk/commits/54cec4d7d36e7a5066770287998f425606a2f983",
+    "html_url": "https://github.com/dart-lang/sdk/commit/54cec4d7d36e7a5066770287998f425606a2f983",
+    "comments_url": "https://api.github.com/repos/dart-lang/sdk/commits/54cec4d7d36e7a5066770287998f425606a2f983/comments",
+    "author": {
+      "login": "iinozemtsev",
+      "id": 481692,
+      "node_id": "MDQ6VXNlcjQ4MTY5Mg==",
+      "avatar_url": "https://avatars.githubusercontent.com/u/481692?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/iinozemtsev",
+      "html_url": "https://github.com/iinozemtsev",
+      "followers_url": "https://api.github.com/users/iinozemtsev/followers",
+      "following_url": "https://api.github.com/users/iinozemtsev/following{/other_user}",
+      "gists_url": "https://api.github.com/users/iinozemtsev/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/iinozemtsev/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/iinozemtsev/subscriptions",
+      "organizations_url": "https://api.github.com/users/iinozemtsev/orgs",
+      "repos_url": "https://api.github.com/users/iinozemtsev/repos",
+      "events_url": "https://api.github.com/users/iinozemtsev/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/iinozemtsev/received_events",
+      "type": "User",
+      "user_view_type": "public",
+      "site_admin": false
+    },
+    "committer": null,
+    "parents": [
+      {
+        "sha": "dfb3119ebd35814c2e3b1ff50b7fd684522b129d",
+        "url": "https://api.github.com/repos/dart-lang/sdk/commits/dfb3119ebd35814c2e3b1ff50b7fd684522b129d",
+        "html_url": "https://github.com/dart-lang/sdk/commit/dfb3119ebd35814c2e3b1ff50b7fd684522b129d"
+      }
+    ]
+  },
+  {
+    "sha": "dfb3119ebd35814c2e3b1ff50b7fd684522b129d",
+    "node_id": "C_kwDOAiEj5toAKGRmYjMxMTllYmQzNTgxNGMyZTNiMWZmNTBiN2ZkNjg0NTIyYjEyOWQ",
+    "commit": {
+      "author": {
+        "name": "Elliott Brooks",
+        "email": "elliottbrooks@google.com",
+        "date": "2025-03-26T17:21:30Z"
+      },
+      "committer": {
+        "name": "Commit Queue",
+        "email": "dart-scoped@luci-project-accounts.iam.gserviceaccount.com",
+        "date": "2025-03-26T17:21:30Z"
+      },
+      "message": "[Beta] Cherry-pick DevTools 2.44.1\n\nIssue description: DevTools cherry-pick to fix a couple issues with the Property Editor: 1) When the computer goes to sleep, the Property Editor is disconnected and does not reconnect when the computer wakes up 2) The Property Editor does not debounce calls to the Analysis Server\nWhat is the fix: 1) Detect when DTD has disconnected, and reload the Property Editor IFRAME 2) Property Editor debounces calls to the Analysis Server at the rate of 600ms\nWhy cherry-pick: Make sure users trying out the Property Editor on beta are able to use the Property Editor when their computer goes to sleep, and guarantee we are not sending to many requests to the Analysis Server.\nRisk: Low, this fix has landed on the main channel of DevTools and has been tested.\nIssue link(s): https://github.com/flutter/devtools/issues/9067\nCherry-pick: https://github.com/flutter/devtools/tree/2.44.1\nChange-Id: Ia597ef854dc51c94e51e7e2a62c061087dd11eba\nReviewed-on: https://dart-review.googlesource.com/c/sdk/+/417903\nReviewed-by: Alexander Thomas <athom@google.com>\nCommit-Queue: Alexander Thomas <athom@google.com>\nReviewed-by: Kenzie Davisson <kenzieschmoll@google.com>",
+      "tree": {
+        "sha": "a4f3920a345581b52cf334898f2be0cd187e206b",
+        "url": "https://api.github.com/repos/dart-lang/sdk/git/trees/a4f3920a345581b52cf334898f2be0cd187e206b"
+      },
+      "url": "https://api.github.com/repos/dart-lang/sdk/git/commits/dfb3119ebd35814c2e3b1ff50b7fd684522b129d",
+      "comment_count": 0,
+      "verification": {
+        "verified": false,
+        "reason": "unsigned",
+        "signature": null,
+        "payload": null,
+        "verified_at": null
+      }
+    },
+    "url": "https://api.github.com/repos/dart-lang/sdk/commits/dfb3119ebd35814c2e3b1ff50b7fd684522b129d",
+    "html_url": "https://github.com/dart-lang/sdk/commit/dfb3119ebd35814c2e3b1ff50b7fd684522b129d",
+    "comments_url": "https://api.github.com/repos/dart-lang/sdk/commits/dfb3119ebd35814c2e3b1ff50b7fd684522b129d/comments",
+    "author": {
+      "login": "elliette",
+      "id": 21270878,
+      "node_id": "MDQ6VXNlcjIxMjcwODc4",
+      "avatar_url": "https://avatars.githubusercontent.com/u/21270878?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/elliette",
+      "html_url": "https://github.com/elliette",
+      "followers_url": "https://api.github.com/users/elliette/followers",
+      "following_url": "https://api.github.com/users/elliette/following{/other_user}",
+      "gists_url": "https://api.github.com/users/elliette/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/elliette/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/elliette/subscriptions",
+      "organizations_url": "https://api.github.com/users/elliette/orgs",
+      "repos_url": "https://api.github.com/users/elliette/repos",
+      "events_url": "https://api.github.com/users/elliette/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/elliette/received_events",
+      "type": "User",
+      "user_view_type": "public",
+      "site_admin": false
+    },
+    "committer": null,
+    "parents": [
+      {
+        "sha": "b471519723aada8b9619397a4b15c34bf17125b5",
+        "url": "https://api.github.com/repos/dart-lang/sdk/commits/b471519723aada8b9619397a4b15c34bf17125b5",
+        "html_url": "https://github.com/dart-lang/sdk/commit/b471519723aada8b9619397a4b15c34bf17125b5"
+      }
+    ]
+  },
+  {
     "sha": "b471519723aada8b9619397a4b15c34bf17125b5",
     "node_id": "C_kwDOAiEj5toAKGI0NzE1MTk3MjNhYWRhOGI5NjE5Mzk3YTRiMTVjMzRiZjE3MTI1YjU",
     "commit": {
@@ -5642,110 +5766,6 @@
         "sha": "0a7aae264809b0e9792240a2b602d02838a9948b",
         "url": "https://api.github.com/repos/dart-lang/sdk/commits/0a7aae264809b0e9792240a2b602d02838a9948b",
         "html_url": "https://github.com/dart-lang/sdk/commit/0a7aae264809b0e9792240a2b602d02838a9948b"
-      }
-    ]
-  },
-  {
-    "sha": "0a7aae264809b0e9792240a2b602d02838a9948b",
-    "node_id": "C_kwDOAiEj5toAKDBhN2FhZTI2NDgwOWIwZTk3OTIyNDBhMmI2MDJkMDI4MzhhOTk0OGI",
-    "commit": {
-      "author": {
-        "name": "Derek Xu",
-        "email": "derekx@google.com",
-        "date": "2025-02-28T18:26:02Z"
-      },
-      "committer": {
-        "name": "Commit Queue",
-        "email": "dart-scoped@luci-project-accounts.iam.gserviceaccount.com",
-        "date": "2025-02-28T18:26:02Z"
-      },
-      "message": "[VM/Profiler] Correctly apply the value of --profile-period specified on the CLI\n\nTEST=Verified that pkg/vm_service/test/profile_period_cli_option_test\npasses with the changes in this CL and fails without them.\n\nChange-Id: Ic36014abe682f9b4c829317b59bb664683e12d7e\nReviewed-on: https://dart-review.googlesource.com/c/sdk/+/412781\nCommit-Queue: Derek Xu <derekx@google.com>\nReviewed-by: Siva Annamalai <asiva@google.com>",
-      "tree": {
-        "sha": "c108c62a7ffab27cc97b016dae17be5e59e65260",
-        "url": "https://api.github.com/repos/dart-lang/sdk/git/trees/c108c62a7ffab27cc97b016dae17be5e59e65260"
-      },
-      "url": "https://api.github.com/repos/dart-lang/sdk/git/commits/0a7aae264809b0e9792240a2b602d02838a9948b",
-      "comment_count": 0,
-      "verification": {
-        "verified": false,
-        "reason": "unsigned",
-        "signature": null,
-        "payload": null,
-        "verified_at": null
-      }
-    },
-    "url": "https://api.github.com/repos/dart-lang/sdk/commits/0a7aae264809b0e9792240a2b602d02838a9948b",
-    "html_url": "https://github.com/dart-lang/sdk/commit/0a7aae264809b0e9792240a2b602d02838a9948b",
-    "comments_url": "https://api.github.com/repos/dart-lang/sdk/commits/0a7aae264809b0e9792240a2b602d02838a9948b/comments",
-    "author": {
-      "login": "derekxu16",
-      "id": 1782969,
-      "node_id": "MDQ6VXNlcjE3ODI5Njk=",
-      "avatar_url": "https://avatars.githubusercontent.com/u/1782969?v=4",
-      "gravatar_id": "",
-      "url": "https://api.github.com/users/derekxu16",
-      "html_url": "https://github.com/derekxu16",
-      "followers_url": "https://api.github.com/users/derekxu16/followers",
-      "following_url": "https://api.github.com/users/derekxu16/following{/other_user}",
-      "gists_url": "https://api.github.com/users/derekxu16/gists{/gist_id}",
-      "starred_url": "https://api.github.com/users/derekxu16/starred{/owner}{/repo}",
-      "subscriptions_url": "https://api.github.com/users/derekxu16/subscriptions",
-      "organizations_url": "https://api.github.com/users/derekxu16/orgs",
-      "repos_url": "https://api.github.com/users/derekxu16/repos",
-      "events_url": "https://api.github.com/users/derekxu16/events{/privacy}",
-      "received_events_url": "https://api.github.com/users/derekxu16/received_events",
-      "type": "User",
-      "user_view_type": "public",
-      "site_admin": false
-    },
-    "committer": null,
-    "parents": [
-      {
-        "sha": "7179fd549a0aacf326498c2ecee3717a696a0bcc",
-        "url": "https://api.github.com/repos/dart-lang/sdk/commits/7179fd549a0aacf326498c2ecee3717a696a0bcc",
-        "html_url": "https://github.com/dart-lang/sdk/commit/7179fd549a0aacf326498c2ecee3717a696a0bcc"
-      }
-    ]
-  },
-  {
-    "sha": "7179fd549a0aacf326498c2ecee3717a696a0bcc",
-    "node_id": "C_kwDOAiEj5toAKDcxNzlmZDU0OWEwYWFjZjMyNjQ5OGMyZWNlZTM3MTdhNjk2YTBiY2M",
-    "commit": {
-      "author": {
-        "name": "DEPS Autoroller",
-        "email": "dart-autoroll@skia-public.iam.gserviceaccount.com",
-        "date": "2025-02-28T18:06:09Z"
-      },
-      "committer": {
-        "name": "Commit Queue",
-        "email": "dart-scoped@luci-project-accounts.iam.gserviceaccount.com",
-        "date": "2025-02-28T18:06:09Z"
-      },
-      "message": "Roll BoringSSL from daa03aac8d88 to 748a2d281d33 (1 revision)\n\nhttps://boringssl.googlesource.com/boringssl.git/+log/daa03aac8d88..748a2d281d33\n\n2025-02-25 davidben@google.com Update googletest\n\nIf this roll has caused a breakage, revert this CL and stop the roller\nusing the controls here:\nhttps://autoroll.skia.org/r/boringssl-dart-sdk\nPlease CC dart-engprod@google.com,dart-vm-gardener@grotations.appspotmail.com,dart-vm-team@google.com on the revert to ensure that a human\nis aware of the problem.\n\nTo file a bug in BoringSSL: https://crbug.com/boringssl/new\nTo file a bug in Dart SDK: https://github.com/dart-lang/sdk/issues\n\nTo report a problem with the AutoRoller itself, please file a bug:\nhttps://issues.skia.org/issues/new?component=1389291&template=1850622\n\nDocumentation for the AutoRoller is here:\nhttps://skia.googlesource.com/buildbot/+doc/main/autoroll/README.md\n\nTbr: dart-vm-gardener@grotations.appspotmail.com\nChange-Id: I2612eec98c3fda74c708db466d4e9411916aa4a1\nReviewed-on: https://dart-review.googlesource.com/c/sdk/+/411980\nReviewed-by: Brian Quinlan <bquinlan@google.com>\nReviewed-by: Alexander Aprelev <aam@google.com>\nCommit-Queue: Brian Quinlan <bquinlan@google.com>",
-      "tree": {
-        "sha": "0061dc2e35ea9d7c32504d05b79ea0c026329bf8",
-        "url": "https://api.github.com/repos/dart-lang/sdk/git/trees/0061dc2e35ea9d7c32504d05b79ea0c026329bf8"
-      },
-      "url": "https://api.github.com/repos/dart-lang/sdk/git/commits/7179fd549a0aacf326498c2ecee3717a696a0bcc",
-      "comment_count": 0,
-      "verification": {
-        "verified": false,
-        "reason": "unsigned",
-        "signature": null,
-        "payload": null,
-        "verified_at": null
-      }
-    },
-    "url": "https://api.github.com/repos/dart-lang/sdk/commits/7179fd549a0aacf326498c2ecee3717a696a0bcc",
-    "html_url": "https://github.com/dart-lang/sdk/commit/7179fd549a0aacf326498c2ecee3717a696a0bcc",
-    "comments_url": "https://api.github.com/repos/dart-lang/sdk/commits/7179fd549a0aacf326498c2ecee3717a696a0bcc/comments",
-    "author": null,
-    "committer": null,
-    "parents": [
-      {
-        "sha": "41abb291402617e63ea4c59be45ffc7ad6f036b3",
-        "url": "https://api.github.com/repos/dart-lang/sdk/commits/41abb291402617e63ea4c59be45ffc7ad6f036b3",
-        "html_url": "https://github.com/dart-lang/sdk/commit/41abb291402617e63ea4c59be45ffc7ad6f036b3"
       }
     ]
   }
